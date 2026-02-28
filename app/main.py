@@ -10,8 +10,10 @@ app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 
+
 class TaskCreate(BaseModel):
     title: str
+
 
 class Task(BaseModel):
     id: int
@@ -20,6 +22,7 @@ class Task(BaseModel):
     class Config:
         from_attributes = True  # pydantic v2
 
+
 def get_db():
     db = SessionLocal()
     try:
@@ -27,13 +30,16 @@ def get_db():
     finally:
         db.close()
 
+
 @app.get("/health")
 def health():
     return {"status": "healthy"}
 
+
 @app.get("/tasks", response_model=List[Task])
 def get_tasks(db: Session = Depends(get_db)):
     return db.query(TaskModel).all()
+
 
 @app.post("/tasks", response_model=Task, status_code=201)
 def create_task(task: TaskCreate, db: Session = Depends(get_db)):
@@ -42,6 +48,7 @@ def create_task(task: TaskCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_task)
     return new_task
+
 
 @app.delete("/tasks/{task_id}")
 def delete_task(task_id: int, db: Session = Depends(get_db)):

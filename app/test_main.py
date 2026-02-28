@@ -3,10 +3,12 @@ from main import app
 
 client = TestClient(app)
 
+
 def test_health():
     r = client.get("/health")
     assert r.status_code == 200
     assert r.json()["status"] == "healthy"
+
 
 def test_create_and_list_tasks():
     r = client.post("/tasks", json={"title": "test task"})
@@ -19,6 +21,7 @@ def test_create_and_list_tasks():
     assert r.status_code == 200
     tasks = r.json()
     assert any(t["title"] == "test task" for t in tasks)
+
 
 def test_delete_missing_task_404():
     r = client.delete("/tasks/999999")
